@@ -1,10 +1,11 @@
-FROM ruby:2.5
+FROM ruby:2.6.3
 RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
 RUN mkdir /home/app
 WORKDIR /home/app
 COPY ./src/Gemfile /home/app/Gemfile
 COPY ./src/Gemfile.lock /home/app/Gemfile.lock
 RUN gem install bundler
+RUN gem install rails
 RUN bundle install
 COPY ./src /home/app
 # Add a script to be executed every time the container starts.
@@ -13,5 +14,7 @@ COPY ./src /home/app
 # ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3000
 RUN pwd >> r.sh
+RUN ["rm", "-f", "./tmp/pids/server.pid"]
+
 # Start the main process.
-CMD ["rails", "s"]
+CMD ["rails", "s", "-b", "0.0.0.0"]

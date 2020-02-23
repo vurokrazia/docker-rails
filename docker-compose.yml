@@ -22,7 +22,7 @@ services:
     container_name: web
     build: .
     volumes:
-      - .:/myapp
+      - ./src:/myapp
     ports:
       - "3000:3000"
     depends_on:
