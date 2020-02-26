@@ -1,5 +1,6 @@
 FROM ruby:2.6.3
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+RUN apt-get update -qq && apt-get install -y nodejs libxslt-dev libxml2-dev  default-mysql-client postgresql-client vim nano
+#libmysqlclient-dev
 RUN mkdir /home/app
 WORKDIR /home/app
 COPY ./src/Gemfile /home/app/Gemfile

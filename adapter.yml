@@ -1,0 +1,42 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  username: <%= "#{ENV['DATABASE_USER']}" %>
+  password: <%= "#{ENV['DATABASE_PASSWORD']}" %>
+  pool: 5
+development:
+  <<: *default
+  database: <%= "#{ENV['DATABASE_NAME']}" %>_development
+test:
+  <<: *default
+  database: <%= "#{ENV['DATABASE_NAME']}" %>_test
+production:
+  <<: *default
+  database: <%= "#{ENV['DATABASE_NAME']}" %>_production
+
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  collation: utf8mb4_bin
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: db_mysql
+  socket: /var/run/mysqld/mysqlx.sock
+  username: <%= ENV['DATAB_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  port: <%= ENV['DATABASE_PORT'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+
+development:
+ <<: *default
+ database: <%= ENV['DATABASE_NAME'] %>_development
+
+test:
+  <<: *default
+  database: <%= ENV['DATABASE_NAME'] %>_test
+
+production:
+  <<: *default
+  database: <%= "#{ENV['DATABASE_NAME']}" %>_production
+  username: project_name
+  password: <%= ENV['DATABASE_PASSWORD'] %>

@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 networks:
   rails:
 volumes:
@@ -22,12 +22,20 @@ services:
     container_name: web
     build: .
     volumes:
-      - ./src:/myapp
+      - "./src:/home/app/"
+      # - type: bind
+      #   source: ./src
+      #   target: /home/app
     ports:
-      - "3000:3000"
+      - 3000:3000
     depends_on:
       - db
     networks:
       - rails
     environment:
+      - DATABASE_PASSWORD=toor
+      - DATABASE_NAME=hera
+      - DATABASE_USER=root
+      - DATABASE_PORT=3306
       - RAILS_ENV=development
+      - RAILS_MAX_THREADS=5
