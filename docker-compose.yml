@@ -3,9 +3,21 @@ networks:
   rails:
 volumes:
   postgresql:
+  mysql:
 services:
-  db:
-    container_name: db_post
+  db_mysql:
+    image: mysql:5.7
+    container_name: backend_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+  db_postgres:
+    container_name: backend_postgres
     image: postgres
     environment:
       - POSTGRES_PASSWORD=toor
@@ -18,24 +30,21 @@ services:
       - rails
     ports:
       - 4308:5432
-  web:
-    container_name: web
+  backend_rails:
+    container_name: backend_rails
     build: .
     volumes:
       - "./src:/home/app/"
-      # - type: bind
-      #   source: ./src
-      #   target: /home/app
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
-      - db
-    networks:
-      - rails
+      - db_mysql
+      - db_postgres
+    links:
+      - db_mysql
+      - db_postgres
     environment:
-      - DATABASE_PASSWORD=toor
-      - DATABASE_NAME=hera
-      - DATABASE_USER=root
-      - DATABASE_PORT=3306
-      - RAILS_ENV=development
-      - RAILS_MAX_THREADS=5
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}

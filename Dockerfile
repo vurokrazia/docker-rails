@@ -1,21 +1,24 @@
-FROM ruby:2.6.3
-RUN apt-get update -qq && apt-get install -y nodejs libxslt-dev libxml2-dev  default-mysql-client postgresql-client vim nano
-#libmysqlclient-dev
-RUN mkdir /home/app
-WORKDIR /home/app
-COPY ./src/Gemfile /home/app/Gemfile
-COPY ./src/Gemfile.lock /home/app/Gemfile.lock
-RUN gem install bundler
-RUN gem install rails
-RUN bundle install
-COPY ./src /home/app
-# Add a script to be executed every time the container starts.
-# COPY entrypoint.sh /usr/bin/
-# RUN chmod +x /usr/bin/entrypoint.sh
-# ENTRYPOINT ["entrypoint.sh"]
-EXPOSE 3000
-RUN pwd >> r.sh
-RUN ["rm", "-f", "./tmp/pids/server.pid"]
+FROM ruby:2.6.0
 
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  nodejs
+
+RUN mkdir -p /home/app
+WORKDIR /home/app
+
+COPY ./src/Gemfile ./
+COPY ./src/Gemfile.lock ./
+RUN gem install bundler && bundle install --jobs 20 --retry 5
+
+# Copy the main application.
+COPY ./src/ ./
+RUN pwd >> r.sh
+COPY docker-entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+EXPOSE 3000
+RUN ["rm", "-f", "./tmp/pids/server.pid"]
 # Start the main process.
-CMD ["rails", "s", "-b", "0.0.0.0"]
+CMD ["rails", "server", "-b", "0.0.0.0"]
